@@ -1,0 +1,38 @@
+.Checkout {
+    position: fixed;
+    z-index: 500;
+    background-color: white;
+    width: 70%;
+    border: 1px solid #ccc;
+    box-shadow: 1px 1px 1px black;
+    padding: 16px;
+    left: 15%;
+    top: 30%;
+    box-sizing: border-box;
+    transition: all 0.3s ease-out;
+}
+
+.CloseButton{
+    float: right;
+    margin-right: 15px;
+}
+
+.CheckoutPrice{
+    float: right;
+    margin-right: 20px;
+}
+
+.ConfirmCheckout{
+    margin-left: 20px;
+}
+
+.YourOrder{
+margin-top: 10px
+}
+
+@media (min-width: 600px) {
+    .Checkout {
+        width: 470px;
+        left: calc(50% - 250px);
+    }
+}
