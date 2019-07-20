@@ -5,6 +5,7 @@ import BuildControls from '../../components/Burger/BuildControls/BuildControls'
 import Checkout from './../../components/Checkout/Checkout'
 import Backdrop from '../../components/Backdrop/Backdrop'
 import axios from 'axios'
+import '../UI/Spinner/Spinner.css'
 
 const INGREDIENT_PRICES = {
   salad: 0.5,
@@ -25,7 +26,8 @@ class BurgerBuild extends Component {
       },
       price: 1,
       orderDisable: false,
-      checkoutClick: false
+      checkoutClick: false,
+      checkLoading: false
     }
   }
 
@@ -77,6 +79,10 @@ class BurgerBuild extends Component {
   }
 
   checkoutContinueHandler () {
+    this.setState({
+      checkLoading: true
+    })
+
     const order = {
       ingredients: this.state.ingredients,
       price: this.state.price,
@@ -90,7 +96,12 @@ class BurgerBuild extends Component {
     }
 
     axios.post('https://burgershop-a5748.firebaseio.com/orders.json', order)
-      .then(response => console.log(response))
+      .then(response =>
+        console.log(response),
+      this.setState({
+        checkLoading: false,
+        checkoutClick: false
+      }))
       .catch(error => console.log(error))
   }
 
@@ -109,6 +120,19 @@ class BurgerBuild extends Component {
         if (counter === 4 ? bool = true : bool = false) {}
       }
     }
+    let loadingCheck
+    if (this.state.checkLoading) {
+      loadingCheck = <div className='loader'>Loading...</div>
+    } else {
+      loadingCheck = <Checkout
+        closeClicked={this.checkoutCloseHandler.bind(this)}
+        confirmClicked={this.checkoutContinueHandler.bind(this)}
+        ingredients={Object.keys(this.state.ingredients).map(key => {
+          return <li key={Math.random() * 1000} style={{ textTransform: 'capitalize' }}> {key} : {this.state.ingredients[key]}</li>
+        })}
+        price={this.state.price} />
+    }
+
     // console.log(disabledCheck)
     return (
       <Aux>
@@ -121,15 +145,7 @@ class BurgerBuild extends Component {
           lessClicked={this.removeIngredientsHandler.bind(this)}
           moreClicked={this.addIngredientsHandler.bind(this)}
           disabled={disabledCheck} />
-        {this.state.checkoutClick
-          ? <Checkout
-            closeClicked={this.checkoutCloseHandler.bind(this)}
-            confirmClicked={this.checkoutContinueHandler.bind(this)}
-            ingredients={Object.keys(this.state.ingredients).map(key => {
-              return <li key={Math.random() * 1000} style={{ textTransform: 'capitalize' }}> {key} : {this.state.ingredients[key]}</li>
-            })}
-            price={this.state.price} />
-          : null}
+        {this.state.checkoutClick ? loadingCheck : null}
         {this.state.checkoutClick ? <Backdrop backdropClicked={this.checkoutCloseHandler.bind(this)} /> : null}
       </Aux>
     )
