@@ -4,6 +4,7 @@ import Burger from '../../components/Burger/Burger'
 import BuildControls from '../../components/Burger/BuildControls/BuildControls'
 import Checkout from './../../components/Checkout/Checkout'
 import Backdrop from '../../components/Backdrop/Backdrop'
+import axios from 'axios'
 
 const INGREDIENT_PRICES = {
   salad: 0.5,
@@ -75,6 +76,24 @@ class BurgerBuild extends Component {
     })
   }
 
+  checkoutContinueHandler () {
+    const order = {
+      ingredients: this.state.ingredients,
+      price: this.state.price,
+      customer: {
+        name: 'TestName',
+        email: 'Testmail@gmail.com',
+        address: 'TestAddress',
+        zipCode: 'TestZipCode'
+      },
+      deliverMethod: 'Fastest'
+    }
+
+    axios.post('https://burgershop-a5748.firebaseio.com/orders.json', order)
+      .then(response => console.log(response))
+      .catch(error => console.log(error))
+  }
+
   render () {
     const disabledCheck = {
       ...this.state.ingredients
@@ -105,6 +124,7 @@ class BurgerBuild extends Component {
         {this.state.checkoutClick
           ? <Checkout
             closeClicked={this.checkoutCloseHandler.bind(this)}
+            confirmClicked={this.checkoutContinueHandler.bind(this)}
             ingredients={Object.keys(this.state.ingredients).map(key => {
               return <li key={Math.random() * 1000} style={{ textTransform: 'capitalize' }}> {key} : {this.state.ingredients[key]}</li>
             })}

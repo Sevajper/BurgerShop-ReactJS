@@ -15,7 +15,7 @@ const Checkout = (props) => {
       <div className='CheckoutPrice'>
         {'Price: ' + parseFloat(props.price).toFixed(2) + '$'}
       </div>
-      <button className='ConfirmCheckout'> Confirm </button>
+      <button className='ConfirmCheckout' onClick={props.confirmClicked}> Confirm </button>
 
     </div>
   )
