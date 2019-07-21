@@ -18,19 +18,24 @@ class BurgerBuild extends Component {
   constructor (props) {
     super(props)
     this.state = {
-      ingredients: {
-        salad: 0,
-        bacon: 0,
-        cheese: 0,
-        meat: 0
-      },
+      ingredients: null,
       price: 1,
       orderDisable: false,
       checkoutClick: false,
-      checkLoading: false
+      checkLoading: false,
+      order: false
     }
   }
 
+  componentDidMount () {
+    axios.get('https://burgershop-a5748.firebaseio.com/ingredients.json')
+      .then(response =>
+        this.setState({
+          ingredients: response.data
+        }))
+      .catch(error =>
+        window.alert(error))
+  }
   addIngredientsHandler (type) {
     const oldIngredients = this.state.ingredients[type]
     const newIngredients = oldIngredients + 1
@@ -68,13 +73,15 @@ class BurgerBuild extends Component {
 
   checkoutOpenHandler () {
     this.setState({
-      checkoutClick: true
+      checkoutClick: true,
+      order: false
     })
   }
 
   checkoutCloseHandler () {
     this.setState({
-      checkoutClick: false
+      checkoutClick: false,
+      order: false
     })
   }
 
@@ -100,9 +107,9 @@ class BurgerBuild extends Component {
         console.log(response),
       this.setState({
         checkLoading: false,
-        checkoutClick: false
+        order: true
       }))
-      .catch(error => console.log(error))
+      .catch(error => window.alert(error + '\nOrder failed, try again!'))
   }
 
   render () {
@@ -120,31 +127,40 @@ class BurgerBuild extends Component {
         if (counter === 4 ? bool = true : bool = false) {}
       }
     }
-    let loadingCheck
-    if (this.state.checkLoading) {
-      loadingCheck = <div className='loader'>Loading...</div>
-    } else {
-      loadingCheck = <Checkout
-        closeClicked={this.checkoutCloseHandler.bind(this)}
-        confirmClicked={this.checkoutContinueHandler.bind(this)}
-        ingredients={Object.keys(this.state.ingredients).map(key => {
-          return <li key={Math.random() * 1000} style={{ textTransform: 'capitalize' }}> {key} : {this.state.ingredients[key]}</li>
-        })}
-        price={this.state.price} />
+    let loadingCheck = null
+    let burger = <div className='loader'>Loading...</div>
+
+    if (this.state.ingredients) {
+      burger = (
+        <Aux>
+          <Burger
+            ingredients={this.state.ingredients}
+            price={this.state.price}
+            orderDisable={bool}
+            checkoutClicked={this.checkoutOpenHandler.bind(this)} />
+          <BuildControls
+            lessClicked={this.removeIngredientsHandler.bind(this)}
+            moreClicked={this.addIngredientsHandler.bind(this)}
+            disabled={disabledCheck} />
+        </Aux>)
+      if (this.state.checkLoading) {
+        loadingCheck = <div className='loader'>Loading...</div>
+      } else {
+        loadingCheck = <Checkout
+          order={this.state.order}
+          closeClicked={this.checkoutCloseHandler.bind(this)}
+          confirmClicked={this.checkoutContinueHandler.bind(this)}
+          ingredients={Object.keys(this.state.ingredients).map(key => {
+            return <li key={Math.random() * 1000} style={{ textTransform: 'capitalize' }}> {key} : {this.state.ingredients[key]}</li>
+          })}
+          price={this.state.price} />
+      }
     }
 
     // console.log(disabledCheck)
     return (
       <Aux>
-        <Burger
-          ingredients={this.state.ingredients}
-          price={this.state.price}
-          orderDisable={bool}
-          checkoutClicked={this.checkoutOpenHandler.bind(this)} />
-        <BuildControls
-          lessClicked={this.removeIngredientsHandler.bind(this)}
-          moreClicked={this.addIngredientsHandler.bind(this)}
-          disabled={disabledCheck} />
+        {burger}
         {this.state.checkoutClick ? loadingCheck : null}
         {this.state.checkoutClick ? <Backdrop backdropClicked={this.checkoutCloseHandler.bind(this)} /> : null}
       </Aux>
