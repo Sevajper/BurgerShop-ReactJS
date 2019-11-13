@@ -23,7 +23,12 @@ class BurgerBuild extends Component {
       orderDisable: false,
       checkoutClick: false,
       checkLoading: false,
-      order: false
+      order: false,
+      name: '',
+      email: '',
+      number: 0,
+      address: '',
+      zipCode: 0
     }
   }
 
@@ -94,10 +99,11 @@ class BurgerBuild extends Component {
       ingredients: this.state.ingredients,
       price: this.state.price,
       customer: {
-        name: 'TestName',
-        email: 'Testmail@gmail.com',
-        address: 'TestAddress',
-        zipCode: 'TestZipCode'
+        name: this.state.name,
+        email: this.state.email,
+        number: this.state.number,
+        address: this.state.address,
+        zipCode: this.state.zipCode
       },
       deliverMethod: 'Fastest'
     }

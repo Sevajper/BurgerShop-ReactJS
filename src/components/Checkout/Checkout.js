@@ -13,6 +13,13 @@ const Checkout = (props) => {
         <div>
           {props.ingredients}
         </div><br />
+        <form>
+          <input type='text' name='Name' placeholder='Name' onChange={props.userFormChange} /><br />
+          <input type='text' name='Address' placeholder='Address' /><br />
+          <input type='text' name='Email' placeholder='Email' /><br />
+          <input type='text' name='Number' placeholder='Phone number' /><br />
+          <input type='number' name='ZipCode' placeholder='Zip code' /><br /><br />
+        </form>
         <div className='CheckoutPrice'>
           {'Price: ' + parseFloat(props.price).toFixed(2) + '$'}
         </div>
